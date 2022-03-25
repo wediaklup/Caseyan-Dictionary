@@ -15,13 +15,12 @@ class Wort:
 
 def load():
     tmp_return = {}
-    with open("liste.kaz", "r") as f:
-        data = f.read()
-        data = data.split("\n")
-        print(f"Inital\t{data}")
-        for word in range(len(data)):
-            tmp_return[getattr(data[word], 'kaz')] = data[word]
-        print(tmp_return)
+    with open("liste.kaz", "rb") as f:
+        data = f.read().decode("utf8").split("\n")
+    print(f"Inital\t{data}")
+    for word in range(len(data)):
+        tmp_return[getattr(data[word], 'kaz')] = data[word]
+    print(tmp_return)
             
 
 # Init
