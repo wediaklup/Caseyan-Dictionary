@@ -5,3 +5,7 @@ Wort('монэнзy', 'MÒNĕnzu', 'subst', ['Monster'], 'furchterregendes, häs
 Wort('монÿтно', 'MÒNütnò', 'verb', ['etwas fürchten'], '[1] vor jemandem, etwas Angst haben; [2] Unangenehmes ahnen, befürchten; [3] Furcht empfinden, Angst haben', ['Q2'], 'мон')
 Wort('монλи', 'MÒNli', 'adj', ['gruselig'], 'sich vor etwas Unheimlichem, Makabrem o. Ä. fürchten; Grausen, Furcht empfinden', ['R3'], 'мон')
 Wort('бÿргэнзy', 'bűrgĕnzu', 'subst', ['Stadt'], 'größere, geschlossene Siedlung, die mit bestimmten Rechten ausgestattet ist und den verwaltungsmäßigen, wirtschaftlichen und kulturellen Mittelpunkt eines Gebietes darstellt', ['P4'], 'бÿрг')
+Wort('бÿргÿтно', 'bűrgütnò', 'verb', ['besiedeln'], '[1] ansiedeln; [2] ein noch nicht oder nicht mehr bewohntes Gebiet bebauen und bewohnen', ['Q4'], 'бÿрг')
+Wort('бÿргλи', 'bűrgli', 'adj', ['städtisch'], '[1] die Verwaltung einer Stadt betreffend; [2] wie in der Stadt üblich; [3] nicht ländlich', ['R4'], 'бÿрг')
+Wort('дōмэнзy', 'dómĕnzu', 'subst', ['Haus', 'Gebäude'], '[1] Gebäude, das Menschen zum Wohnen dient; [2] Gebäude, das zu einem bestimmten Zweck errichtet wurde; [3] Wohnung, Heim, in dem jemand ständig lebt', ['P5', 'P51'], 'дōм')
+Wort('дōмÿтно', 'dómütnò', 'verb', ['wohnen', 'besiedeln'], '[1] seine Wohnung, seinen ständigen Wohnsitz haben; [2] vorübergehend eine Unterkunft haben', ['Q4', 'Q5'], 'дōм')
