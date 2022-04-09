@@ -1,7 +1,25 @@
+from click import pass_context
 import decl
 import os
+from colorama import init, Fore as F, Back as B, Style as S
+import gspread
+
+sa = gspread.service_account()
+sh = sa.open("кăзèйски езык API Access 2022-04-08")
+
+wks = sh.worksheet("Grammatik")
 
 DEBUG = False
+init()
+
+
+def lst_to_str(lst, join=' '):
+    result = join.join(lst)
+    return result
+
+
+def error_msg(exception, title=""):
+    print(f"{B.RED}{F.BLACK} == ERROR {title.upper()} == {S.RESET_ALL}\n{F.LIGHTRED_EX}{exception}{S.RESET_ALL}\n")
 
 
 class Wort:
@@ -34,13 +52,18 @@ class Wort:
             return 'Präposition'
 
     def fullformat(self):
-        trans = str(self.deu)
-        trans = trans.strip("[")
-        trans = trans.strip("]")
+        trans = lst_to_str(self.deu, ", ")
         if self.wortart == 'subst' or self.wortart == 'verb' or self.wortart == 'adj' or self.wortart == 'pron':
-            return f"{self.kaz}\n{self.stransc}\n{self.wortart_format()}\nvon {self.inflekativ}\n\n{trans}\n{self.definition}"
+            return f" {F.LIGHTGREEN_EX}{self.kaz}\n {self.stransc}{S.RESET_ALL}\n {self.wortart_format()}\n {F.LIGHTBLUE_EX}von {self.inflekativ}{S.RESET_ALL}\n\n{trans}\n{self.definition}"
         else:
-            return f"{self.kaz}\n{self.stransc}\n{self.wortart_format()}\n\n{trans}\n{self.definition}"
+            return f" {F.LIGHTGREEN_EX}{self.kaz}\n {self.stransc}{S.RESET_ALL}\n {self.wortart_format()}\n\n{trans}\n{self.definition}"
+
+    def rowformat(self):
+        trans = lst_to_str(self.deu, ", ")
+        if self.wortart == 'subst' or self.wortart == 'verb' or self.wortart == 'adj' or self.wortart == 'pron':
+            return f" {F.LIGHTGREEN_EX}{self.kaz}{S.RESET_ALL} ({F.LIGHTGREEN_EX}{self.stransc}{S.RESET_ALL}, {self.wortart_format()}): {trans} {F.LIGHTBLACK_EX}<- {self.inflekativ}{S.RESET_ALL}"
+        else:
+            return f" {F.LIGHTGREEN_EX}{self.kaz}{S.RESET_ALL} ({F.LIGHTGREEN_EX}{self.stransc}{S.RESET_ALL}, {self.wortart_format()}): {trans}"
 
 
 def load():
@@ -112,6 +135,73 @@ def add():
         worter[a_kaz] = Wort(a_kaz, a_stransc, a_wortart, a_deu, a_definition, a_tags, a_infl)
         save()
         os.system("cls")
+
+
+def spread():
+    # Wort = A
+    # NomenBedeutung = C
+    # VerbBedeutung = D
+    # AdflekativBedeutung = E
+
+    def tostring(lst: list):
+        # Converts Google Spreadsheet Cell to str
+        tmp = lst[0]
+        result = ''.join(tmp)
+        return result
+
+    # Getting user values
+    os.system("cls")
+    start = input("Import starting from Row No. ")
+    end = input("Import stopping at Row No. ")
+    row_nav = int(start)
+
+    # Creating the word list
+    for i in range(int(end) - int(start)):
+        try:
+            wort = tostring(wks.get(f"A{row_nav}"))
+        except Exception as e:
+            error_msg(e, "getting word")
+
+        try:
+            de_n = tostring(wks.get(f"C{row_nav}"))
+        except IndexError:
+            de_n = None
+        except Exception as e:
+            error_msg(e, "getting nominal meaning")
+
+        try:
+            de_v = tostring(wks.get(f"D{row_nav}"))
+        except IndexError:
+            de_v = None
+        except Exception as e:
+            error_msg(e, "getting verbal meaning")
+
+        try:
+            de_a = tostring(wks.get(f"E{row_nav}"))
+        except IndexError:
+            de_a = None
+        except Exception as e:
+            error_msg(e, "getting adjectival meaning")
+
+        try:
+            voclist = [wort, de_n, de_v, de_a]
+            print(voclist)
+        except Exception as e:
+            error_msg(e)
+
+
+        formlist = decl.process_infl(wort)
+        if de_n != None:
+            worter[formlist[0]] = Wort(formlist[0], "SCTRANS", "subst", [de_n], "coming soon", [], wort)
+        if de_v != None:
+            worter[formlist[1]] = Wort(formlist[1], "SCTRANS", "verb", [de_v], "coming soon", [], wort)
+        if de_a != None:
+            worter[formlist[2]] = Wort(formlist[2], "SCTRANS", "adj", [de_a], "coming soon", [], wort)
+        save()
+
+        row_nav += 1
+
+    input()
 
 
 def search(inp):
@@ -300,9 +390,32 @@ def search(inp):
         os.system("cls")
 
     if e_wortart != '':
-        print(f"{inp} ist {form} von:\n")
+        print(f"{F.LIGHTYELLOW_EX}{inp}{S.RESET_ALL} ist {F.LIGHTMAGENTA_EX}{form}{S.RESET_ALL} von:\n")
 
     return fin.fullformat()
+
+
+def translate(deu: str, fmt=False):
+    try:
+        possibilities = []
+        for wr in worter:
+            if deu in worter[wr].deu:
+                possibilities.append(wr)
+
+        if fmt:
+            print(f"\n\nKaseiisch:\n{worter[possibilities[0]].kaz}\n\n")
+            print("Änhlich:")
+            for pos in possibilities:
+                print(f"{worter[pos].kaz} - {lst_to_str(worter[pos].deu)}")
+        else:
+            return possibilities[0]
+    except Exception as e:
+        os.system("cls")
+        print("== Übersetzer ==")
+        print(e)
+    input("\n\nBeliebige Taste drücken ")
+
+
 
 
 # Init
@@ -310,6 +423,25 @@ def search(inp):
 # wörter = load()
 
 if __name__ == '__main__':
-    os.system("cls")
+    x = 0
+
     while True:
-        add()
+        if x == 0:
+            os.system("cls")
+            print(f"{F.LIGHTYELLOW_EX}What do you want to do?{S.RESET_ALL}\n1) Import Caseyan Google Spreadsheet into Dictionary\n2) Manually add word to Dictionary\n3) List raw Dictionary\n4) List the entire Dictionary (full screen recommended)")
+            x = input("> ")
+
+        if int(x) == 1:
+            spread()
+        elif int(x) == 2:
+            add()
+        elif int(x) == 3:
+            print(worter)
+            input()
+            x = 0
+        elif int(x) == 4:
+            for i in worter:
+                print(worter[i].rowformat())
+            input()
+            x = 0
+        

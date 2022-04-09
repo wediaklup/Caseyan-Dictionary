@@ -22,12 +22,30 @@ def dekl(mode, inflekativ, arg1="0", arg2="0", arg3="0"):
             pass
 
 
+def conj(inflekativ, gverbi="0", tempus="0"):
+    if gverbi == "0" and tempus == "0":
+        result = [
+            inflekativ + Verb.present.active,
+            inflekativ + Verb.past.active,
+            inflekativ + Verb.future.active,
+            inflekativ + Verb.present.passive,
+            inflekativ + Verb.past.passive,
+            inflekativ + Verb.future.passive,
+            inflekativ + Verb.imperative
+        ]
+        return result
+
+
 def fullformat(mode, liste):
     if mode == "subst":
         resultsg = f"Singular\nNominativ: {liste[0]}\nAkkusativ: {liste[1]}\nLokativ: {liste[2]}\nOrginativ: {liste[3]}\nDirektativ: {liste[4]}\nInstrumentativ: {liste[5]}\nPossessiv: {liste[6]}\nTotalitiv: {liste[7]}\n\n"
         resultpl = f"Plural\nNominativ: {liste[8]}\nAkkusativ: {liste[9]}\nLokativ: {liste[10]}\nOrginativ: {liste[11]}\nDirektativ: {liste[12]}\nInstrumentativ: {liste[13]}\nPossessiv: {liste[14]}\nTotalitiv: {liste[15]}"
         return (resultsg + resultpl)
 
+
+def process_infl(infl):
+    result = [f"{infl}энзy", f"{infl}ÿтно", f"{infl}λи"]
+    return result
 
 class Kasus:
     class sg:
@@ -51,6 +69,7 @@ class Kasus:
                    wort + Kasus.sg.pos,
                    wort + Kasus.sg.tot]
             return res
+
 
     class pl:
         nom = "казу"
@@ -83,6 +102,22 @@ class Wort:
 class Substantiv:
     def __init__(self, inflekativ, wortart, ipa, definition, deklination):
         pass
+
+
+class Verb:
+    class present:
+        active = "ÿтно"
+        passive = "евно"
+
+    class past:
+        active = "ÿтйе"
+        passive = "евйе"
+
+    class future:
+        active = "ÿтшλи"
+        passive = "евшλи"
+
+    imperative = "те"
 
 
 def load():
